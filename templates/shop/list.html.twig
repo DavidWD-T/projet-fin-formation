@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des produits{% endblock %}
+
+{% block body %}
+    <h2 class="text-center mt-2 mb-5">Liste des produits</h2>
+    <div class="container p-0">
+        <div class="row">
+            <div class="col-sm-4 col-md-3 p-0">
+                <form class="mb-3" method="get">
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <div class="input-group">
+                                    <input type="text" class="form-control navSearch" name="search" placeholder="Recherchez...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-secondary navSearch__btn" type="submit">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <form class="shop__filter">
+                    <!-- Price -->
+                    <h3 class="headline">
+                        <span>Prix</span>
+                    </h3>
+                    <div class="radio">
+                        <input type="radio" name="shop-filter__price" id="shop-filter-price_0" class="priceFilters" value="0" checked>
+                        <label for="shop-filter-price_0">Tous</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="shop-filter__price" id="shop-filter-price_1" class="priceFilters" value="25">
+                        <label for="shop-filter-price_1">Moins de 25€</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="shop-filter__price" id="shop-filter-price_2" class="priceFilters" value="50">
+                        <label for="shop-filter-price_2">Moins de 50€</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="shop-filter__price" id="shop-filter-price_3" class="priceFilters" value="100">
+                        <label for="shop-filter-price_3">Moins de 100€</label>
+                    </div>
+                    <hr>
+                    <!-- Appellations -->
+                    <h3 class="headline">
+                        <span>Appellation</span>
+                    </h3>
+                    {% for appellation in appellations %}
+                        <div class="checkbox">
+                        <input type="checkbox" value="{{ appellation.name }}" id="shop-filter-checkbox_1" checked="" class="appellationFilters">
+                        <label for="shop-filter-checkbox_1">{{ appellation.name }}</label>
+                        </div>
+                    {% endfor %}
+            
+                    <!-- Types -->
+                    <h3 class="headline">
+                    <span>Type</span>
+                    </h3>
+                    {% for type in types %}
+                        <div class="checkbox">
+                        <input type="checkbox" value="{{ type.name }}" id="shop-filter-checkbox_1" checked="" class="typeFilters">
+                        <label for="shop-filter-checkbox_1">{{ type.name }}</label>
+                        </div>
+                    {% endfor %}
+
+            
+                    <!-- Colors -->
+                    <h3 class="headline">
+                    <span>Couleur</span>
+                    </h3>
+                    {% for color in colors %}
+                        <div class="checkbox">
+                        <input type="checkbox" value="{{ color.name }}" id="shop-filter-checkbox_1" checked="" class="colorFilters">
+                        <label for="shop-filter-checkbox_1">{{ color.name }}</label>
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="col-sm-8 col-md-9 p-0">
+                <ul class="shop__sorting">
+                    <li {% if sortByPrice == 1 %}class="active"{% endif %}><a href="{{ path('product_list_shop', {'sortByPrice': true, 'search': search}) }}">Prix croissant</a></li>
+                    <li {% if sortByPrice == 0 %}class="active"{% endif %}><a href="{{ path('product_list_shop', {'sortByPrice': false, 'search': search}) }}">Prix décroissant</a></li>
+                </ul>
+                <!-- ------------------------------------------------------------- /Filters -------------------------------------- -->
+        
+                <div class="row col-sm-12">
+                {% for product in products %}
+                    <div class="col-sm-6 col-lg-4 product-card">
+                        <div class="shop__thumb">
+                            <div class="shop-thumb__img">
+                                {% if product.status == 0 %}
+                                    <a href="{{ path('product_show_shop', {'id': product.id}) }}">
+                                    <div class="notToSell">
+                                        <p>Ce produit n'est pas disponible à la vente</p>
+                                    </div>
+                                    </a>
+                                {% endif %}
+                                <a href="{{ path('product_show_shop', {'id': product.id}) }}"><img src="{{ product.picture }}" class="card-img-gtop" alt="..." style="max-height:200px; max-width: 100%"></a>
+                            </div>
+                            <h5 class="shop-thumb__title appellation">
+                                <a href="{{ path('product_show_shop', {'id': product.id}) }}">{{product.appellation.name }}</a>
+                            </h5>
+                            <h6 class="shop-thumb__title type">
+                                <a href="{{ path('product_show_shop', {'id': product.id}) }}" class="text-dark">{{product.type.name }}</a>
+                            </h6>
+                            <h7 class="shop-thumb__title color">
+                                <a href="{{ path('product_show_shop', {'id': product.id}) }}" class="text-secondary">{{product.color.name }}</a>
+                            </h7>
+                            <div class="shop-thumb__price">
+                                <p><span class="product-card__price">{{product.price}}</span>€</p>
+                            </div>
+                            {% for i in 1..product.rate %}
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                            {% endfor %}
+                            <p class="card-text">{{product.cuveeDomaine}}</p>
+                            {# <p>{{product.description|length > 100 ? product.description|slice(0, 70) ~ '(...)' : product.description}}</p> #}
+                            <a href="{{ path('product_show_shop', {'id': product.id}) }}" class="btn btn-dark">Détails <i class="fa fa-search"></i></a>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+                {# <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                    </ul>
+                </nav> #}
+            </div> 
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/shop.js') }}"></script>
+{% endblock %}

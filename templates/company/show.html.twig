@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boutique
+{% endblock %}
+
+{% block body %}
+
+	<h1 class="text-center mb-5 " id="companyName">{{ company.name }}</h1>
+	
+	<a href="{{ path('company_list') }}" class="btn btn-dark ml-4 mb-3">Retour à la liste des boutiques</a>
+
+	<div class="card-body">
+		<div class="row show_company">
+			<div class="col-md-12">
+				<img src="{{ company.picture }}" class="rounded mb-3" id="company_picture" style="max-height: 250px; max-width: 100%">
+
+				{% if company.seller[0].addresses[0] is defined and company.seller[0].productsForSale[0] is defined %}
+
+					<p><strong>
+                        {{ company.seller[0].addresses[0].zipcode }}
+						-
+						{{ company.seller[0].addresses[0].city}}
+						-
+						{{company.seller[0].productsForSale[0].area }}
+                    </strong></p>
+
+				{% endif %}
+				<p class="card-text">
+					{{ company.presentation }}
+				</p>
+
+                {% for i in 1..company.rate %}
+					<i class="fa fa-star" aria-hidden="true"></i>
+				{% endfor %}
+			</div>
+		</div>
+
+		<h2 class="mt-5 mb-4">Adresse de notre boutique</h2>
+		<p class="card-text" id="companyAddress">
+			{{ company.seller[0].addresses[0].street~', '~company.seller[0].addresses[0].city~', '~company.seller[0].addresses[0].zipCode~', '~company.seller[0].addresses[0].country }}
+		</p>
+
+		<h2 class="mt-5 mb-4">Itinéraire</h2>
+		
+		<p><strong>Itinéraire via réseau routier sans péage</strong></p>	
+		<div id="map"></div>
+		<div style="width: 640px; height: 480px" id="mapContainer">
+		</div>
+
+		<h2 class="mt-5 mb-4">Produits de la boutique</h2>
+
+		<div class="row row-cols-1 row-cols-md-3">
+			{% for product in products %}
+                <div class="col-sm-6 col-lg-4 product-card">
+                    <div class="shop__thumb">
+                    <div class="shop-thumb__img">
+                        {% if product.status == 0 %}
+                    		<a href="{{ path('product_show_shop', {'id': product.id}) }}">
+                            <div class="notToSell">
+                                <p>Ce produit n'est pas disponible à la vente</p>
+                            </div>
+							</a>
+                        {% endif %}
+                        <a href="{{ path('product_show_shop', {'id': product.id}) }}"><img src="{{ product.picture }}" class="card-img-gtop" alt="..." style="max-height:200px; max-width: 100%"></a>
+                    </div>
+                    <h5 class="shop-thumb__title">
+                        <a href="{{ path('product_show_shop', {'id': product.id}) }}">{{product.appellation.name }}</a>
+                    </h5>
+                    <div class="shop-thumb__price">
+                        <p><span class="product-card__price">{{product.price}}</span>€</p>
+                    </div>
+                    {% for i in 1..product.rate %}
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    {% endfor %}
+                    <p class="card-text">{{product.cuveeDomaine}}</p>
+                    {# <p>{{product.description|length > 100 ? product.description|slice(0, 70) ~ '(...)' : product.description}}</p> #}
+                    <a href="{{ path('product_show_shop', {'id': product.id}) }}" class="btn btn-dark">Détails <i class="fa fa-search"></i></a>
+                    </a>
+                    
+                </div>
+            </div>
+            {% endfor %}
+		</div>
+		
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="{{ asset('js/company/itineraryGoogle.js') }}"></script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCf2mXXTrrCH9keKRs7x36WZuaJOWPri9I&libraries=places&callback=initMap">
+</script>
+
+{# <script type="module" src="https://js.api.here.com/v3/3.1/mapsjs.bundle.js"></script> #}
+{% endblock %}

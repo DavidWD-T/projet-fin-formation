@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}O'wine{% endblock %}
+
+{% block body %}
+
+{% if app.user %}
+    <div class="d-flex justify-content-center">
+        <h1 class="text-center" style="font-size: 3em;">Bienvenue {{ app.user.firstname }}!</h1>
+    </div>
+    {% else %}
+    <div class="d-flex justify-content-center">
+        <h1 class="text-center" style="font-size: 3em;">Bienvenue sur O'wine !</h1>
+    </div>
+{% endif %}
+
+
+{% if app.user and 'ROLE_SELLER' in app.user.roles %}
+  {# -------------------------------------------------------- et qu'on est un seller -------------------------------- #}
+    {# alors on voit la homepage personnalisée pour le vendeur #}
+    <div class="row row-cols-1 row-cols-md-3 d-flex justify-content-center">
+        <div class="col-8 col-md-3 mb-4">
+            <div class="card h-100 border-1">                
+                <div class="card-body text-center">
+                    <a href="{{ path('profile',{'id': app.user.company.id}) }}"><i class="fas fa-user-circle picto fa-5x mb-4"></i></a>
+                    <h5>
+                    <a class="title-picto" href="{{ path('profile',{'id': app.user.company.id}) }}">Mon profil</a>
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 col-md-3 mb-4">
+            <div class="card h-100 border-1"> 
+                <div class="card-body text-center">
+                    <a href="{{ path('board',{'id': app.user.company.id}) }}"><i class="fas fa-chart-pie picto fa-5x mb-4"></i></a>
+                    <h5>
+                    <a class="title-picto" href="{{ path('board',{'id': app.user.company.id}) }}">Mon dashboard</a>
+                    </h5>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-8 col-md-3 mb-4">
+            <div class="card h-100 border-1">
+                <div class="card-body text-center">
+                    <a href="{{ path('company_show',{'id': (app.user.company.id)}) }}"><i class="fas fa-glass-cheers picto fa-5x mb-4"></i></i></a>
+                    <h5>
+                    <a class="title-picto" href="{{ path('company_show',{'id': (app.user.company.id)}) }}">Ma boutique</a>
+                    </h5>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% else %}
+    {# --------------------------------------------------- Utilisateur non connecté ou acheteur en attente V206156 ----------------------------------- #}
+    <div class="mt-2 mb-1 border-0 homepage" style="background-color: #FAF6F0;">
+        <div class="row no-gutters my-auto" id="home">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ asset('images/mobile.png') }}" style="width: 83%; height: 83%;" class="card-img" alt="...">
+                </div>
+            </div>
+            <div class="col-md-6 my-auto">
+                <div class="card-body">
+                    <p class="card-text text-center" style="font-size: 1.4em;">En visite dans une région viticole vous avez dégusté les produits d'un domaine ou d'un caveau</p>
+                    <div class="d-flex justify-content-center">
+                        <img src="{{ asset('images/degustation.png') }}" style="width: 55%; height: 55%" alt="">
+                    </div>
+                    <p class="text-center" style="font-size: 1.4em;">Vous souhaitez acheter quelques bouteilles pour vous les faire livrer directement chez vous</p>
+                    <div class="d-flex justify-content-center">
+                        <p class="text-center mr-3" style="font-size: 3em;"><i class="fas fa-wine-bottle"></i></p>
+                        <p class="text-center mr-3" style="font-size: 3em;"><i class="fas fa-box-open"></i></p>
+                        <p class="text-center mr-3" style="font-size: 3em;"><i class="fas fa-plane"></i></p>
+                        <p class="text-center mr-3" style="font-size: 3em;"><i class="fas fa-globe-americas"></i></p>
+                        <p class="text-center mr-3" style="font-size: 3em;"><i class="fas fa-shipping-fast"></i></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 my-auto">
+                <div class="card-body">
+                    <p class="text-center" style="font-size: 1.4em;">Parcourez la liste des <a href="{{ path('company_list') }}" style="color: #6e081f;">caveaux</a> proposant notre service</p>
+                    <a href="{{ path('company_list') }}"><p class="text-center mr-3" style="font-size: 3em;"><i class="fas fa-store"></i></p></a>
+                </div>
+            </div>
+            <div class="col-md-6 my-auto">
+                <div class="card-body">
+                    <p class="text-center" style="font-size: 1.4em;">ou le <a href="{{ path('product_list_shop') }}" style="color: #6e081f;">catalogue des produits</a> en vente sur notre application.</p>
+                    <p class="text-center mr-3" style="font-size: 3em;"><a href="{{ path('product_list_shop') }}"><i class="fas fa-shopping-cart"></i></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="map" class="d-none"></div>
+
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="{{ asset('js/homepage/aroundMeGoogle.js') }}"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCf2mXXTrrCH9keKRs7x36WZuaJOWPri9I&libraries=places&callback=initMap"></script>
+{% endblock %}
+
+
+    {# ----------------------------------------------------------- et qu'on est un buyer -------------------------------------------- #}
+    {# {% if 'ROLE_BUYER' in app.user.roles %}
+    {# alors on voit la homepage personnalisée pour le buyer #}
+       {# <div class="card mb-3 m-auto">
+            <div class="row no-gutters">
+                <div class="col-md-12">
+                    {% for company in companies %}
+                    <div class="card-body">
+                        <h2 class="card-title text-center">{{ company.name }}</h2>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="{{ company.picture }}" class="mb-3 mr-3 rounded float-left mw-100" />
+                                <p class="card-text">
+                                {{ company.presentation }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %} 
+                </div>
+            </div>
+        </div> #}
+
+        {# <div class="mb-3 m-auto">
+            <div class="d-flex justify-content-center align-items-end">
+                <h2 class="text-center mt-3 mb-3">Sélection de produits</h2><i class="fas fa-wine-bottle mt-3 mb-3 ml-2 fa-5x" aria-hidden="true"></i>
+            </div>
+            <div class="row row-cols-1 row-cols-md-3">
+                <div class="col mb-4">
+                    <div class="card h-100">
+                        <img src="..." class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Produit 1</h5>
+                            <div class="d-flex justify-content-between">
+                                <p class="card-text">Note</p>
+                                <p class="card-text">Prix</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+        </div> #}
+    
+

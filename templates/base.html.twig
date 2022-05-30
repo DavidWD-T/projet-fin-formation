@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      
+        <title>{% block title %}O'wine{% endblock %}</title>
+        <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.ico')}}"/>
+
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+            integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" type="text/css">
+        <!-- FontAwesome -->
+        <link rel="stylesheet" href="{{ asset('css/font-awesome/css/all.css')}}">
+        <!-- Font Cooper Hewitt-->
+        <link href="{{ asset('css/fonts/CooperHewitt-Light/CooperHewitt-Light.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{asset('css/fonts/CooperHewitt-Book/CooperHewitt-Book.css') }}" rel="stylesheet" type="text/css" />
+        <!-- Font Quattrocento -->
+        <link href="https://fonts.googleapis.com/css2?family=Quattrocento&display=swap" rel="stylesheet">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="{{ asset('css/style.css')}}">
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg">
+            <div style="display: flex; justify-content: space-between; align-items:center">
+              {% if app.user %}
+              <div class="mr-3">
+                <a class="nav-link profileIcon p-0" href="{{ path('profile') }}"><i class="fas fa-user-circle fa-2x d-block"></i></a>
+              </div>
+              {% endif %}
+              <a class="navbar-brand" href="{{ path('homepage') }}"><img src="{{ asset('images/logoOwineBurgundry.png') }}" height="30" class="d-inline-block align-top mr-1">O'wine</a>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ path('homepage') }}">Accueil <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ path('company_list') }}">Boutiques</a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ path('product_list_shop') }}">Produits</a>
+                </li>
+                
+                {# Si on est connecté #}
+                {% if app.user %}
+                  {# et qu'on est un seller #}
+                  {% if 'ROLE_BUYER' in app.user.roles %}
+                    {# alors on voit le lien vers le panier et les commandes  #}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ path('cart_buyer',{'id': (app.user.id)}) }}">Panier</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ path('order_list',{'id': (app.user.id)}) }}">Commandes</a>
+                </li>
+                {% endif %}
+              {% endif %}
+              {# Si on est connecté #}
+                {% if app.user %}
+                  {# et qu'on est un seller #}
+                  {% if 'ROLE_SELLER' in app.user.roles %}
+                    {# alors on voit le lien vers le tableau de bord  #}
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ path('board') }}">Tableau de bord</a>
+                    </li>
+                  {% endif %}
+                {% endif %}
+
+                {# Si on est connecté #}
+                {% if app.user %}
+                  {# et qu'on est un admin #}
+                  {% if 'ROLE_ADMIN' in app.user.roles %}
+                    {# alors on voit le lien vers EasyAdmin  #}
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ path('admin') }}">Tableau d'administration</a>
+                    </li>
+                  {% endif %}
+                {% endif %}
+                {% if app.user %}
+                <li class="nav-item">
+                  <a href="{{ path('app_logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                </li>
+                {% else %}
+                <li class="nav-item align-right">
+                  <a href="{{ path('app_login') }}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Connexion</a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ path('app_register') }}" class="nav-link"><i class="fas fa-book"></i> Inscription</a>
+                </li>
+              {% endif %}
+              </ul>
+
+
+              <form class="form-inline my-2 my-lg-0 mr-3" method="post" action="{{ path('search') }}">
+                <input type="text" value="{{ app.request.query.get('search')}}" class="form-control navSearch" name="search" placeholder="Rechercher">
+                <button type="submit" class="btn my-2 my-sm-0 navSearch__btn"><i class="fas fa-search"></i></button>
+              </form>
+              
+            </div>
+          </nav>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                      {{ message }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+             
+          <div class="container mt-5 mb-3">
+            {% block body %}{% endblock %}
+          </div>
+            
+        <footer id="footer" class="footer">
+          {% block footer %}
+            {% include "_footer.html.twig"%}
+          {% endblock %}
+        </footer>
+
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstable.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"></script>
+
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
